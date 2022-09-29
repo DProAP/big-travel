@@ -7,8 +7,13 @@ import {createNewPointTemplate} from "./view/new-point.js";
 import {createEditPointTemplate} from "./view/edit-point.js";
 import {createPointTemplate} from "./view/point.js";
 
+import {generatePoint} from "./mock/point.js";
+
 
 const POINT_COUNT = 3;
+
+const points = new Array(POINT_COUNT).fill().map(generatePoint);
+console.log(points);
 
 const render = (container, template, place) => {
     container.insertAdjacentHTML(place, template);
