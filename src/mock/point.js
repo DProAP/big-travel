@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
+const OPTIONS_COUNT = 5;
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -7,22 +9,23 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const generateDescription = () => {
-  const descriptions = [
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    'Cras aliquet varius magna, non porta ligula feugiat eget.',
-    'Fusce tristique felis at fermentum pharetra.',
-    'Aliquam id orci ut lectus varius viverra.',
-    'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-    'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
-    'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
-    'Sed sed nisi sed augue convallis suscipit in sed felis.',
-    'Aliquam erat volutpat.',
-    'Nunc fermentum tortor ac porta dapibus.',
-    'In rutrum ac purus sit amet tempus.',
-  ];
+const descriptions = [
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Cras aliquet varius magna, non porta ligula feugiat eget.',
+  'Fusce tristique felis at fermentum pharetra.',
+  'Aliquam id orci ut lectus varius viverra.',
+  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
+  'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
+  'Sed sed nisi sed augue convallis suscipit in sed felis.',
+  'Aliquam erat volutpat.',
+  'Nunc fermentum tortor ac porta dapibus.',
+  'In rutrum ac purus sit amet tempus.',
+];
 
-  const randomCount = getRandomInteger(1, 5);
+const generateDescription = () => {
+  const maxDescriptionLength = 5;
+  const randomCount = getRandomInteger(1, maxDescriptionLength);
 
   let description = '';
 
@@ -35,8 +38,10 @@ const generateDescription = () => {
 
 const generateDates = () => {
   const maxDaysGap = 7;
+  const maxDurationMinutes = 300;
+  const minDurationMinutes = 20;
   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
-  const duration = getRandomInteger(6, 576) * 5;
+  const duration = getRandomInteger(minDurationMinutes, maxDurationMinutes);
   let start = dayjs().add(daysGap, 'day');
   let end = start.add(duration, 'minute');
   start = start.toDate();
@@ -47,71 +52,63 @@ const generateDates = () => {
   }
 };
 
+const types = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeng', 'Restaurant'];
 const generateType = () => {
-  const types = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeng', 'Restaurant'];
   const randomIndex = getRandomInteger(0, types.length-1);
 
   return types[randomIndex];
 };
 
+const destinations = ['Moskow', 'Omsk', 'St. Petersburg', 'Dombay', 'Surgut', 'Anadyr'];
 const generateDestination = () => {
-  const destinations = ['Moskow', 'Omsk', 'St. Petersburg', 'Dombay', 'Surgut', 'Anadyr'];
   const randomIndex = getRandomInteger(0, destinations.length-1);
 
   return destinations[randomIndex];
 };
 
+const offersTemplates = [
+    {title: 'Order Uber', price: 20},
+    {title: 'Upgrade to a business', price:  120},
+    {title: 'Choose the radio station', price:  60},
+    {title: 'Rent a car', price: 200},
+    {title: 'Add luggage', price: 50},
+    {title: 'Switch to comfort', price:  80},
+    {title: 'Add meal', price:  15},
+    {title: 'Choose seats', price:  5},
+    {title: 'Travel by train', price:  40},
+    {title: 'Add breakfast', price: 50},
+    {title: 'Book tickets', price:  40},
+]
+
+const offersDict = new Map();
+const maxOffersCount = 5;
+for (let type of types) {
+  const randomCount = getRandomInteger(0, maxOffersCount);
+  let offersBuf = [];
+  for(let i = 0; i < randomCount; i++){
+    offersBuf.push(offersTemplates[getRandomInteger(0, offersTemplates.length - 1)]);
+  };
+  offersDict.set(type, offersBuf)
+}
+
+
 const generateOptions = (type) => {
 
-  const offers = new Map([
-    ['Taxi', [
-      {title: 'Order Uber', price: 20},
-      {title: 'Upgrade to a business class', price:  120},
-      {title: 'Choose the radio station', price:  60},
-      ]],
-    ['Bus', []],
-    ['Train', []],
-    ['Ship', []],
-    ['Transport', []],
-    ['Drive', [
-        {title: 'Rent a car', price: 200}
-     ]],
-    ['Flight', [
-        {title: 'Add luggage', price: 50},
-        {title: 'Switch to comfort class', price:  80},
-        {title: 'Add meal', price:  15},
-        {title: 'Choose seats', price:  5},
-        {title: 'Travel by train', price:  40}
-      ]],
-    ['Check-in', [
-        {title: 'Add breakfast', price: 50}
-      ]],
-    ['Sightseeng', [
-        {title: 'Book tickets', price:  40},
-        {title: 'Lunch in city', price:  30}
-      ]],
-    ['Restaurant', [
-      {title: 'Leave a tip', price:  20}
-    ]],
-  ])
-
-  const randomCount = getRandomInteger(0, offers.get(type).length || 0);
+  const randomCount = getRandomInteger(0, offersDict.get(type).length - 1);
 
   let options = [];
 
   for(let i = 0; i < randomCount; i++){
-    const option = {
-      title: offers[getRandomInteger(0, options.length - 1)],
-      price: getRandomInteger(1, 10) * 5 
-    }
-    options.push(option);
+    let optionID = getRandomInteger(0, offersDict.get(type).length-1);
+    options.push(optionID);
   };
 
   return options;
 };
 
 const generatePhotos = () => {
-  const randomCount = getRandomInteger(1, 5);
+  const maxPhotosCount = 5;
+  const randomCount = getRandomInteger(1, maxPhotosCount);
 
   let photos = [];
 
@@ -130,14 +127,15 @@ const generateFavorite = () => {
 
 export const generatePoint = () => {
   const {start, end} = generateDates();
+  const type = generateType();
   return {
-    type: generateType(),
+    type: type,
     destination: generateDestination(),
     startDate: start,
     endDate: end,
     description: generateDescription(),
     photos: generatePhotos(),
     isFavorite: generateFavorite(),
-    options: generateOptions(),
+    options: generateOptions(type),
   };
 };
