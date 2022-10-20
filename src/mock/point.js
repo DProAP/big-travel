@@ -96,11 +96,11 @@ const generateOptions = (type) => {
 
   const randomCount = getRandomInteger(0, offersDict.get(type).length - 1);
 
-  let options = [];
+  let options = new Set();
 
   for(let i = 0; i < randomCount; i++){
     let optionID = getRandomInteger(0, offersDict.get(type).length-1);
-    options.push(optionID);
+    options.add(optionID);
   };
 
   return options;
@@ -126,6 +126,7 @@ const generateFavorite = () => {
 
 
 export const generatePoint = () => {
+  console.log(offersDict);
   const {start, end} = generateDates();
   const type = generateType();
   return {
