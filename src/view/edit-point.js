@@ -5,7 +5,7 @@ import {DESTINATIONS} from '../const.js';
 
 
 
-export const createNewPointTemplate = (point = {}, offers) => {
+export const createEditPointTemplate = (point = {}, offers) => {
   
   const {
     type = 'Flight', 
@@ -38,11 +38,12 @@ export const createNewPointTemplate = (point = {}, offers) => {
     return result;
   }
   
+  const thisTypeOffers = offers.get(type);
+
   const createOffersTemplate = () => {
     let result = '';
-    const thisTypeOffers = offers.get(type);
     
-    for (let i = 0; i < thisTypeOffers.length-1; i++){
+    for (let i = 0; i < thisTypeOffers.length; i++){
       const titleTail = thisTypeOffers[i].title.split(' ').slice(-1);
       const isChecked = options.has(i) ? 'checked' : '';
       result += `<div class="event__offer-selector">
@@ -57,7 +58,9 @@ export const createNewPointTemplate = (point = {}, offers) => {
     return result;
   }
 
-  const isHidden = photos.length == 0 ? 'visually-hidden' : '';
+  const isEmptyPhotos = photos.length == 0 ? 'visually-hidden' : '';
+  const isEmptyDestination = description == '' ? 'visually-hidden' : '';
+  const isEmptyOffers = thisTypeOffers.length == 0 ? 'visually-hidden' : '';
   
   const createPhotosTemplate = () => {
     let result = '';
@@ -116,7 +119,7 @@ export const createNewPointTemplate = (point = {}, offers) => {
       <button class="event__reset-btn" type="reset">Cancel</button>
     </header>
     <section class="event__details">
-      <section class="event__section  event__section--offers">
+      <section class="event__section  event__section--offers ${isEmptyOffers}">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
@@ -125,11 +128,11 @@ export const createNewPointTemplate = (point = {}, offers) => {
 
       </section>
 
-      <section class="event__section  event__section--destination">
+      <section class="event__section  event__section--destination ${isEmptyDestination}">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${description}</p>
 
-        <div class="event__photos-container ${isHidden}" >
+        <div class="event__photos-container ${isEmptyPhotos}" >
           <div class="event__photos-tape">
             ${createPhotosTemplate()}
           </div>

@@ -9,7 +9,7 @@ import {getRandomInteger} from '../utils.js';
 
 const generateDescription = () => {
   const maxDescriptionLength = 5;
-  const randomCount = getRandomInteger(1, maxDescriptionLength);
+  const randomCount = getRandomInteger(0, maxDescriptionLength);
   let description = '';
 
   for(let i = 0; i < randomCount; i++){
