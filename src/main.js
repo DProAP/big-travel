@@ -8,14 +8,17 @@ import {createPointTemplate} from "./view/point.js";
 
 import {generatePoint} from "./mock/point.js";
 import {generateOffersDict} from "./mock/point.js";
+import {generateFilter} from './mock/filter.js';
 
 
 const POINT_COUNT = 15;
 
 const offers = generateOffersDict();
 const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
+const filters = generateFilter(points);
 console.log(offers);
 console.log(points);
+console.log(filters);
 
 const render = (container, template, place) => {
     container.insertAdjacentHTML(place, template);
@@ -35,7 +38,7 @@ render(routeInfoElement, createTripCostTemplate(), 'beforeend');
 
 render(navigationElement, createMainMenuTemplate(), 'beforeend');
 
-render(filterElement, createFilterTemplate(), 'beforeend');
+render(filterElement, createFilterTemplate(filters), 'beforeend');
 
 render(tripEventsElement, createSortTemplate(), 'beforeend');
 

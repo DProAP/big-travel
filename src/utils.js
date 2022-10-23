@@ -24,3 +24,11 @@ export const formatDuration = (duration) => {
 export const formatDate = (date,formatTemplate) => {
   return dayjs(date).format(formatTemplate);
 }
+
+export const isPointFuture = (endDate) => {
+  return endDate >= Date.now();
+}
+
+export const isPointPast = (startDate) => {
+  return startDate <= Date.now();
+}
