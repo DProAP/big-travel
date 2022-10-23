@@ -4,12 +4,14 @@ import {createMainMenuTemplate} from "./view/main-menu.js";
 import {createFilterTemplate} from "./view/filter.js";
 import {createSortTemplate} from "./view/sort.js";
 import {createEditPointTemplate} from "./view/edit-point.js";
-import {createPointTemplate} from "./view/point.js";
+import {createPointTemplate, createPointsListTemplate} from "./view/point.js";
 
 import {generatePoint} from "./mock/point.js";
 import {generateOffersDict} from "./mock/point.js";
 import {generateFilter} from './mock/filter.js';
 
+import { SORT_TYPES } from "./const.js";
+import { MENU_TABS } from "./const.js";
 
 const POINT_COUNT = 15;
 
@@ -36,12 +38,12 @@ render(tripInfoElement, createTripInfoTemplate(), 'afterbegin');
 const routeInfoElement = tripInfoElement.querySelector('.trip-main__trip-info');
 render(routeInfoElement, createTripCostTemplate(), 'beforeend');
 
-render(navigationElement, createMainMenuTemplate(), 'beforeend');
+render(navigationElement, createMainMenuTemplate(MENU_TABS), 'beforeend');
 
 render(filterElement, createFilterTemplate(filters), 'beforeend');
 
-render(tripEventsElement, createSortTemplate(), 'beforeend');
-
+render(tripEventsElement, createSortTemplate(SORT_TYPES), 'beforeend');
+render(tripEventsElement, createPointsListTemplate(), 'beforeend');
 const tripListElement = tripEventsElement.querySelector('.trip-events__list');
 
 render(tripListElement, createEditPointTemplate(points[0], offers), 'beforeend');

@@ -1,5 +1,10 @@
 import {formatDuration, formatDate} from '../utils.js'
 
+export const createPointsListTemplate = () => {
+  return `<ul class="trip-events__list"></ul>`
+}
+
+
 export const createPointTemplate = (point, offers) => {
   const {type, destination, startDate, endDate, description, photos, isFavorite, options, price} = point;
 

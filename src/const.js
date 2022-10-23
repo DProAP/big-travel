@@ -14,9 +14,27 @@ export const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-export const TYPES = ['Taxi', 'Bus', 'Train', 'Ship', 'Transport', 'Drive', 'Flight', 'Check-in', 'Sightseeing', 'Restaurant'];
+export const TYPES = [
+  'Taxi', 
+  'Bus', 
+  'Train', 
+  'Ship', 
+  'Transport', 
+  'Drive', 
+  'Flight', 
+  'Check-in', 
+  'Sightseeing', 
+  'Restaurant'
+];
 
-export const DESTINATIONS = ['Moscow', 'Omsk', 'St. Petersburg', 'Dombay', 'Surgut', 'Anadyr'];
+export const DESTINATIONS = [
+  'Moscow', 
+  'Omsk', 
+  'St. Petersburg', 
+  'Dombay', 
+  'Surgut', 
+  'Anadyr'
+];
 
 export const OFFERS_TEMPLATES = [
   {title: 'Order Uber', price: 20},
@@ -31,3 +49,16 @@ export const OFFERS_TEMPLATES = [
   {title: 'Add breakfast', price: 50},
   {title: 'Book tickets', price:  40},
 ];
+
+export const SORT_TYPES = [
+  'day',
+  'event',
+  'time',
+  'price',
+  'offers'
+];
+
+export const MENU_TABS = [
+  'Table',
+  'Stats'
+]
