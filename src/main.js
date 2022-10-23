@@ -8,11 +8,14 @@ import {createEditPointTemplate} from "./view/edit-point.js";
 import {createPointTemplate} from "./view/point.js";
 
 import {generatePoint} from "./mock/point.js";
+import {generateOffersDict} from "./mock/point.js";
 
 
-const POINT_COUNT = 3;
+const POINT_COUNT = 15;
 
-const points = new Array(POINT_COUNT).fill().map(generatePoint);
+const offers = generateOffersDict();
+const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
+console.log(offers);
 console.log(points);
 
 const render = (container, template, place) => {
@@ -38,8 +41,8 @@ render(filterElement, createFilterTemplate(), 'beforeend');
 render(tripEventsElement, createTripBoardTemplate(), 'beforeend');
 
 const tripListElement = tripEventsElement.querySelector('.trip-events__list');
-render(tripListElement, createEditPointTemplate(), 'beforeend');
-for(let i=0; i < POINT_COUNT; i++){
-    render(tripListElement, createPointTemplate(), 'beforeend');
+
+render(tripListElement, createNewPointTemplate(points[0], offers), 'beforeend');
+for(let i=1; i < POINT_COUNT; i++){
+    render(tripListElement, createPointTemplate(points[i], offers), 'beforeend');
 }
-render(tripListElement, createNewPointTemplate(), 'beforeend');
