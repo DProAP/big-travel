@@ -1,9 +1,37 @@
-export const createTripInfoTemplate = () => {
+import {formatDate} from "../utils";
+
+export const createTripInfoTemplate = (points) => {
+
+  const getTripTitle = (points) => {
+    const destinations = Array.from(new Set(points.map((point) => point.destination)).keys());
+    let tripTitle = '';
+    switch(destinations.length){
+      case 0:
+        break;
+      case 1:
+        tripTitle = destinations[0];
+        break;
+      case 2:
+      case 3:
+        tripTitle = destinations.join(' &mdash; ');
+        break;
+      default:
+        tripTitle = destinations[0] 
+                    + ' &mdash; ... &mdash; ' 
+                    + destinations[destinations.length-1];
+    }
+    return tripTitle;
+  }
+
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
-      <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+      <h1 class="trip-info__title">${getTripTitle(points)}</h1>
 
-      <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+      <p class="trip-info__dates">
+        ${formatDate(points[0].startDate, 'MMM DD')}
+        &nbsp;&mdash;&nbsp;
+        ${formatDate(points[points.length-1].endDate, 'MMM DD')}
+      </p>
     </div>
   </section>`;
 };

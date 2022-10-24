@@ -10,13 +10,16 @@ import {generatePoint} from "./mock/point.js";
 import {generateOffersDict} from "./mock/point.js";
 import {generateFilter} from './mock/filter.js';
 
-import { SORT_TYPES } from "./const.js";
-import { MENU_TABS } from "./const.js";
+import {sortPointsByDay} from "./utils.js";
+
+import {SORT_TYPES} from "./const.js";
+import {MENU_TABS} from "./const.js";
 
 const POINT_COUNT = 15;
 
 const offers = generateOffersDict();
 const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
+sortPointsByDay(points);
 const filters = generateFilter(points);
 console.log(offers);
 console.log(points);
@@ -34,9 +37,9 @@ const navigationElement = siteHeaderElement.querySelector('.trip-controls__navig
 const filterElement = siteHeaderElement.querySelector('.trip-controls__filters');
 const tripEventsElement = siteMainElement.querySelector('.trip-events');
 
-render(tripInfoElement, createTripInfoTemplate(), 'afterbegin');
+render(tripInfoElement, createTripInfoTemplate(points), 'afterbegin');
 const routeInfoElement = tripInfoElement.querySelector('.trip-main__trip-info');
-render(routeInfoElement, createTripCostTemplate(), 'beforeend');
+render(routeInfoElement, createTripCostTemplate(points, offers), 'beforeend');
 
 render(navigationElement, createMainMenuTemplate(MENU_TABS), 'beforeend');
 

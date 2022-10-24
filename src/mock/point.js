@@ -66,7 +66,6 @@ const generatePhotos = () => {
   let photos = [];
 
   for(let i = 0; i < randomCount; i++){
-    // const photo = `http://picsum.photos/248/152?r=${Math.random()};`
     const photo = `https://loremflickr.com/248/152/architecture?random=${Math.random()}`;
     photos.push(photo);
   };
