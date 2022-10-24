@@ -6,18 +6,24 @@ export const createPointsListTemplate = () => {
 
 
 export const createPointTemplate = (point, offers) => {
-  const {type, destination, startDate, endDate, description, photos, isFavorite, options, price} = point;
+  const {type, destination, startDate, endDate, isFavorite, options, price} = point;
 
-  const createCheckedOffersTemplate = () => {
-    let result = '';
-    for (let index of options){
-      result += `<li class="event__offer">
-      <span class="event__offer-title">${offers.get(type)[index].title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offers.get(type)[index].price}</span>
+  const createCheckedOffersItemTemplate = (offer) => {
+    return (
+      `<li class="event__offer">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
       </li>`
-    }
-    return result;
+    )
+  }
+
+  const createCheckedOffersTemplate = (offers, options) => {
+    const checkedOffersTemplate = Array.from(options.values())
+      .map((index) => createCheckedOffersItemTemplate(offers.get(type)[index]))
+      .join('');
+
+    return checkedOffersTemplate;
   }
   
   const duration = formatDuration(endDate - startDate);
@@ -43,7 +49,7 @@ export const createPointTemplate = (point, offers) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createCheckedOffersTemplate()}
+        ${createCheckedOffersTemplate(offers, options)}
       </ul>
       <button class="event__favorite-btn ${favoriteClass}" type="button">
         <span class="visually-hidden">Add to favorite</span>
