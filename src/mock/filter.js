@@ -1,9 +1,9 @@
-import {isPointFuture, isPointPast} from '../utils.js';
+import {isDateFuture, isDatePast} from '../utils.js';
 
 const pointToFilterMap = {
   everything: (points) => points.length,
-  future: (points) => points.filter((point) => isPointFuture(point.endDate)).length,
-  past: (points) => points.filter((point) => isPointPast(point.startDate)).length
+  future: (points) => points.filter((point) => isDateFuture(point.endDate)).length,
+  past: (points) => points.filter((point) => isDatePast(point.startDate)).length
 };
 
 export const generateFilter = (points) => {

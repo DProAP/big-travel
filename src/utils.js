@@ -25,17 +25,17 @@ export const formatDate = (date,formatTemplate) => {
   return dayjs(date).format(formatTemplate);
 }
 
-export const isPointFuture = (endDate) => {
+export const isDateFuture = (endDate) => {
   return endDate >= Date.now();
 }
 
-export const isPointPast = (startDate) => {
+export const isDatePast = (startDate) => {
   return startDate <= Date.now();
 }
 
-export const createRepitedTemplate = (items, callback) => {
+export const createRepitedTemplate = (items, callback, args) => {
   const result = items
-    .map((item, i) => callback(item, i))
+    .map((item, i) => callback(item, i, args))
     .join('');
   return result;
 }

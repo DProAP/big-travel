@@ -21,9 +21,7 @@ const offers = generateOffersDict();
 const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
 sortPointsByDay(points);
 const filters = generateFilter(points);
-console.log(offers);
-console.log(points);
-console.log(filters);
+
 
 const render = (container, template, place) => {
     container.insertAdjacentHTML(place, template);

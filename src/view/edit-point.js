@@ -22,14 +22,15 @@ export const createEditPointTemplate = (point = {}, offers) => {
   const isEmptyDestination = description == '' ? 'visually-hidden' : '';
   const isEmptyOffers = thisTypeOffers.length == 0 ? 'visually-hidden' : '';
   
-  const createEventTypesItemTemplate = (type) => {
+  const createEventTypesItemTemplate = (type, index, currentType) => {
     return ( 
       `<div class="event__type-item">
         <input 
           id="event-type-${type.toLowerCase()}-1" 
           class="event__type-input  visually-hidden" 
           type="radio" name="event-type" 
-          value="${type.toLowerCase()}">
+          value="${type.toLowerCase()}"
+          ${type === currentType ? 'checked' : ''}>
         <label 
           class="event__type-label  event__type-label--${type.toLowerCase()}" 
           for="event-type-${type.toLowerCase()}-1">
@@ -43,7 +44,7 @@ export const createEditPointTemplate = (point = {}, offers) => {
     return`<option value="${destination}"></option>`;
   }
   
-  const createOffersItemTemplate = (offer, i) => {
+  const createOffersItemTemplate = (offer, i, options) => {
       const titleTail = offer.title.split(' ').slice(-1);
       const isChecked = options.has(i) ? 'checked' : '';
       return `<div class="event__offer-selector">
@@ -80,7 +81,7 @@ export const createEditPointTemplate = (point = {}, offers) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${createRepitedTemplate(TYPES, createEventTypesItemTemplate)}
+            ${createRepitedTemplate(TYPES, createEventTypesItemTemplate, type)}
           </fieldset>
         </div>
       </div>
@@ -119,7 +120,7 @@ export const createEditPointTemplate = (point = {}, offers) => {
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${createRepitedTemplate(thisTypeOffers, createOffersItemTemplate)}
+          ${createRepitedTemplate(thisTypeOffers, createOffersItemTemplate, options)}
         </div>
 
       </section>
