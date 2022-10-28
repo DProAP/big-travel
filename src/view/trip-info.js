@@ -1,6 +1,6 @@
-import {formatDate} from "../utils";
+import {formatDate, createElement} from "../utils";
 
-export const createTripInfoTemplate = (points) => {
+const createTripInfoTemplate = (points) => {
 
   const getTripTitle = (points) => {
     const destinations = Array.from(new Set(points.map((point) => point.destination)).keys());
@@ -23,15 +23,40 @@ export const createTripInfoTemplate = (points) => {
     return tripTitle;
   }
 
+  const tripDates = points.length !== 0 ? 
+    formatDate(points[0].startDate, 'MMM DD')
+    + '&nbsp;&mdash;&nbsp;'
+    + formatDate(points[points.length-1].endDate, 'MMM DD') : '';
+  
   return `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${getTripTitle(points)}</h1>
 
       <p class="trip-info__dates">
-        ${formatDate(points[0].startDate, 'MMM DD')}
-        &nbsp;&mdash;&nbsp;
-        ${formatDate(points[points.length-1].endDate, 'MMM DD')}
+        ${tripDates}
       </p>
     </div>
   </section>`;
 };
+
+export default class TripInfo {
+  constructor(points) {
+    this._points = points;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._points);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

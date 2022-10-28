@@ -1,16 +1,18 @@
-import {createTripInfoTemplate} from "./view/trip-info.js";
-import {createTripCostTemplate} from "./view/trip-cost.js";
-import {createMainMenuTemplate} from "./view/main-menu.js";
-import {createFilterTemplate} from "./view/filter.js";
-import {createSortTemplate} from "./view/sort.js";
-import {createEditPointTemplate} from "./view/edit-point.js";
-import {createPointTemplate, createPointsListTemplate} from "./view/point.js";
+import TripInfoView from "./view/trip-info.js";
+import TripCostView from "./view/trip-cost.js";
+import MainMenuView from "./view/main-menu.js";
+import FilterView from "./view/filter.js";
+import SortView from "./view/sort.js";
+import EditPointView from "./view/edit-point.js";
+import PointView from "./view/point.js";
+import PointsListView from "./view/points-list.js";
+import NoPointView from "./view/no-point.js";
 
 import {generatePoint} from "./mock/point.js";
 import {generateOffersDict} from "./mock/point.js";
 import {generateFilter} from './mock/filter.js';
 
-import {sortPointsByDay} from "./utils.js";
+import {sortPointsByDay, render, RenderPosition} from "./utils.js";
 
 import {SORT_TYPES} from "./const.js";
 import {MENU_TABS} from "./const.js";
@@ -22,32 +24,68 @@ const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
 sortPointsByDay(points);
 const filters = generateFilter(points);
 
+const tripInfoElement = document.querySelector('.trip-main');
+const navigationElement = document.querySelector('.trip-controls__navigation');
+const filterElement = document.querySelector('.trip-controls__filters');
+const tripEventsElement = document.querySelector('.trip-events');
 
-const render = (container, template, place) => {
-    container.insertAdjacentHTML(place, template);
-};
+const renderPoint = (pointsListElement, point, offers) => {
+    const pointComponent = new PointView(point, offers);
+    const pointEditComponent = new EditPointView(point, offers);
 
-const siteHeaderElement = document.querySelector('.page-header');
-const siteMainElement = document.querySelector('.page-main');
+    const replaceFieldToForm = () => {
+        pointsListElement.replaceChild(pointEditComponent.getElement(), pointComponent.getElement());
+    }
 
-const tripInfoElement = siteHeaderElement.querySelector('.trip-main');
-const navigationElement = siteHeaderElement.querySelector('.trip-controls__navigation');
-const filterElement = siteHeaderElement.querySelector('.trip-controls__filters');
-const tripEventsElement = siteMainElement.querySelector('.trip-events');
+    const replaceFormToField = () => {
+        pointsListElement.replaceChild(pointComponent.getElement(), pointEditComponent.getElement());
+    }
 
-render(tripInfoElement, createTripInfoTemplate(points), 'afterbegin');
-const routeInfoElement = tripInfoElement.querySelector('.trip-main__trip-info');
-render(routeInfoElement, createTripCostTemplate(points, offers), 'beforeend');
+    const onEscKeyDown = (evt) => {
+        if (evt.key === 'Escape' || evt.key === 'Esc') {
+            evt.preventDefault();
+            replaceFormToField();
+            document.removeEventListener('keydown', onEscKeyDown);
+        }
+    }
 
-render(navigationElement, createMainMenuTemplate(MENU_TABS), 'beforeend');
+    pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+        replaceFieldToForm();
+        document.addEventListener('keydown', onEscKeyDown);
+    });
 
-render(filterElement, createFilterTemplate(filters), 'beforeend');
+    pointEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
+        evt.preventDefault();
+        replaceFormToField();
+        document.removeEventListener('keydown', onEscKeyDown);
+    });
 
-render(tripEventsElement, createSortTemplate(SORT_TYPES), 'beforeend');
-render(tripEventsElement, createPointsListTemplate(), 'beforeend');
-const tripListElement = tripEventsElement.querySelector('.trip-events__list');
+    pointEditComponent.getElement().querySelector('form').addEventListener('reset', (evt) => {
+        evt.preventDefault();
+        replaceFormToField();
+        document.removeEventListener('keydown', onEscKeyDown);
+    });
 
-render(tripListElement, createEditPointTemplate(points[0], offers), 'beforeend');
-for(let i=1; i < POINT_COUNT; i++){
-    render(tripListElement, createPointTemplate(points[i], offers), 'beforeend');
+    render(pointsListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
+  };
+
+const routeInfoComponent = new TripInfoView(points);
+render(tripInfoElement, routeInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
+render(routeInfoComponent.getElement(), new TripCostView(points, offers).getElement(), RenderPosition.BEFOREEND);
+
+render(navigationElement, new MainMenuView(MENU_TABS).getElement(), RenderPosition.BEFOREEND);
+
+render(filterElement, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
+
+if (points.length === 0) {
+    render(tripEventsElement, new NoPointView().getElement(), RenderPosition.BEFOREEND);
+} else {
+    render(tripEventsElement, new SortView(SORT_TYPES).getElement(), RenderPosition.BEFOREEND);
+
+    const tripListComponent = new PointsListView();
+    render(tripEventsElement, tripListComponent.getElement(), RenderPosition.BEFOREEND);
+
+    for(let i=0; i < POINT_COUNT; i++){
+        renderPoint(tripListComponent.getElement(), points[i], offers);
+    }
 }

@@ -1,9 +1,7 @@
-import {formatDate} from '../utils.js'
-import {createRepitedTemplate} from '../utils.js';
-import {TYPES} from '../const.js';
-import {DESTINATIONS} from '../const.js';
+import {formatDate, createRepitedTemplate, createElement} from '../utils.js'
+import {TYPES, DESTINATIONS} from '../const.js';
 
-export const createEditPointTemplate = (point = {}, offers) => {
+const createEditPointTemplate = (point = {}, offers) => {
   
   const {
     type = 'Flight', 
@@ -139,3 +137,26 @@ export const createEditPointTemplate = (point = {}, offers) => {
   </form>
   </li>`;
 };
+
+export default class EditPoint {
+  constructor(point, offers) {
+    this._point = point;
+    this._offers = offers;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointTemplate(this._point, this._offers);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

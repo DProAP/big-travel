@@ -1,11 +1,6 @@
-import {formatDuration, formatDate} from '../utils.js'
+import {formatDuration, formatDate, createElement} from '../utils.js'
 
-export const createPointsListTemplate = () => {
-  return `<ul class="trip-events__list"></ul>`
-}
-
-
-export const createPointTemplate = (point, offers) => {
+const createPointTemplate = (point, offers) => {
   const {type, destination, startDate, endDate, isFavorite, options, price} = point;
 
   const createCheckedOffersItemTemplate = (offer) => {
@@ -63,3 +58,26 @@ export const createPointTemplate = (point, offers) => {
     </div>
   </li>`;
 };
+
+export default class Point {
+  constructor(point, offers) {
+    this._point = point;
+    this._offers = offers;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointTemplate(this._point, this._offers);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

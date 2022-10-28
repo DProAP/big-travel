@@ -1,4 +1,6 @@
-export const createMainMenuItemTemplate = (name, isChecked) => {
+import {createElement} from "../utils.js";
+
+const createMainMenuItemTemplate = (name, isChecked) => {
   return (
     `<a 
       class="trip-tabs__btn  
@@ -8,7 +10,7 @@ export const createMainMenuItemTemplate = (name, isChecked) => {
       </a>`)
 }
 
-export const createMainMenuTemplate = (menyTabs) => {
+const createMainMenuTemplate = (menyTabs) => {
   const mainMenuItemsTemplate = menyTabs
     .map((name, index) => createMainMenuItemTemplate(name, index === 0))
     .join('');
@@ -16,3 +18,25 @@ export const createMainMenuTemplate = (menyTabs) => {
     ${mainMenuItemsTemplate}
   </nav>`;
 };
+
+export default class MainMenu {
+  constructor(menuTabs) {
+    this._tabs = menuTabs;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMainMenuTemplate(this._tabs);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
