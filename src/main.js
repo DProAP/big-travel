@@ -7,15 +7,10 @@ import EditPointView from "./view/edit-point.js";
 import PointView from "./view/point.js";
 import PointsListView from "./view/points-list.js";
 import NoPointView from "./view/no-point.js";
-
-import {generatePoint} from "./mock/point.js";
-import {generateOffersDict} from "./mock/point.js";
+import {generatePoint, generateOffersDict} from "./mock/point.js";
 import {generateFilter} from './mock/filter.js';
-
 import {sortPointsByDay, render, RenderPosition} from "./utils.js";
-
-import {SORT_TYPES} from "./const.js";
-import {MENU_TABS} from "./const.js";
+import {SORT_TYPES, MENU_TABS} from "./const.js";
 
 const POINT_COUNT = 15;
 
@@ -68,24 +63,26 @@ const renderPoint = (pointsListElement, point, offers) => {
 
     render(pointsListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
   };
+  
+  const renderTrip = (tripContainer, tripPoints, tripOffers) => {
+      if (tripPoints.length === 0) {
+          render(tripContainer, new NoPointView().getElement(), RenderPosition.BEFOREEND);
+      } else {
+          render(tripContainer, new SortView(SORT_TYPES).getElement(), RenderPosition.BEFOREEND);
+      
+          const tripListComponent = new PointsListView();
+          render(tripContainer, tripListComponent.getElement(), RenderPosition.BEFOREEND);
+      
+          for(let i=0; i < POINT_COUNT; i++){
+              renderPoint(tripListComponent.getElement(), tripPoints[i], tripOffers);
+          }
+      }
+  }
 
 const routeInfoComponent = new TripInfoView(points);
 render(tripInfoElement, routeInfoComponent.getElement(), RenderPosition.AFTERBEGIN);
 render(routeInfoComponent.getElement(), new TripCostView(points, offers).getElement(), RenderPosition.BEFOREEND);
-
 render(navigationElement, new MainMenuView(MENU_TABS).getElement(), RenderPosition.BEFOREEND);
-
 render(filterElement, new FilterView(filters).getElement(), RenderPosition.BEFOREEND);
 
-if (points.length === 0) {
-    render(tripEventsElement, new NoPointView().getElement(), RenderPosition.BEFOREEND);
-} else {
-    render(tripEventsElement, new SortView(SORT_TYPES).getElement(), RenderPosition.BEFOREEND);
-
-    const tripListComponent = new PointsListView();
-    render(tripEventsElement, tripListComponent.getElement(), RenderPosition.BEFOREEND);
-
-    for(let i=0; i < POINT_COUNT; i++){
-        renderPoint(tripListComponent.getElement(), points[i], offers);
-    }
-}
+renderTrip(tripEventsElement, points, offers);
