@@ -1,19 +1,21 @@
 import {formatDate, createRepitedTemplate, createElement} from '../utils.js'
 import {TYPES, DESTINATIONS} from '../const.js';
 
-const createEditPointTemplate = (point = {}, offers) => {
+const EMPTY_POINT = {
+  type: 'Flight', 
+  destination: '', 
+  startDate: Date.now(), 
+  endDate: Date.now(), 
+  description: '', 
+  photos: [], 
+  isFavorite: false, 
+  options: new Set(), 
+  price: 0
+}
+
+const createPointEditorTemplate = (point, offers) => {
   
-  const {
-    type = 'Flight', 
-    destination = '', 
-    startDate = Date.now(), 
-    endDate = Date.now(), 
-    description = '', 
-    photos = [], 
-    isFavorite = false, 
-    options = new Set(), 
-    price = 0
-  } = point;
+  const {type, destination, startDate, endDate, description, photos, options, price} = point;
   
   const thisTypeOffers = offers.get(type);
   const isEmptyPhotos = photos.length == 0 ? 'visually-hidden' : '';
@@ -138,15 +140,15 @@ const createEditPointTemplate = (point = {}, offers) => {
   </li>`;
 };
 
-export default class EditPoint {
-  constructor(point, offers) {
+export default class PointEditor {
+  constructor(point = EMPTY_POINT, offers) {
     this._point = point;
     this._offers = offers;
     this._element = null;
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._point, this._offers);
+    return createPointEditorTemplate(this._point, this._offers);
   }
 
   getElement() {

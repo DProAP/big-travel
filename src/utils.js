@@ -57,7 +57,7 @@ export const RenderPosition = {
   BEFOREEND: 'beforeend',
 };
 
-export const render = (container, element, place) => {
+export const render = (container, element, place = RenderPosition.BEFOREEND) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -73,4 +73,8 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
 
   return newElement.firstElementChild;
+}
+
+export const isEscKey = (evt) => {
+  return evt.key === 'Escape' || evt.key === 'Esc';
 }
