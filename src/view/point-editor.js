@@ -1,4 +1,5 @@
-import {formatDate, createRepitedTemplate, createElement} from '../utils.js'
+import AbstractView from './abstract.js';
+import {formatDate, createRepitedTemplate} from '../utils.js';
 import {TYPES, DESTINATIONS} from '../const.js';
 
 const EMPTY_POINT = {
@@ -140,25 +141,14 @@ const createPointEditorTemplate = (point, offers) => {
   </li>`;
 };
 
-export default class PointEditor {
+export default class PointEditor extends AbstractView{
   constructor(point = EMPTY_POINT, offers) {
+    super();
     this._point = point;
     this._offers = offers;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointEditorTemplate(this._point, this._offers);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

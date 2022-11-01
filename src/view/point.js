@@ -1,4 +1,5 @@
-import {formatDuration, formatDate, createElement} from '../utils.js'
+import AbstractView from './abstract.js';
+import {formatDuration, formatDate} from '../utils.js';
 
 const createPointTemplate = (point, offers) => {
   const {type, destination, startDate, endDate, isFavorite, options, price} = point;
@@ -59,25 +60,14 @@ const createPointTemplate = (point, offers) => {
   </li>`;
 };
 
-export default class Point {
+export default class Point extends AbstractView{
   constructor(point, offers) {
+    super();
     this._point = point;
     this._offers = offers;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointTemplate(this._point, this._offers);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
