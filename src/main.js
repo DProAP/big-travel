@@ -44,19 +44,17 @@ const renderPoint = (pointsListElement, point, offers) => {
         }
     }
 
-    pointComponent.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setEditClickHandler(() => {
         replaceFieldToForm();
         document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.getElement().querySelector('form').addEventListener('submit', (evt) => {
-        evt.preventDefault();
+    pointEditComponent.setFormSubmitHandler(() => {
         replaceFormToField();
         document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.getElement().querySelector('form').addEventListener('reset', (evt) => {
-        evt.preventDefault();
+    pointEditComponent.setFormResetHandler(() => {
         replaceFormToField();
         document.removeEventListener('keydown', onEscKeyDown);
     });
