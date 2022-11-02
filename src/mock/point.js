@@ -5,7 +5,7 @@ import {DESCRIPTIONS} from '../const.js';
 import {TYPES} from '../const.js';
 import {DESTINATIONS, OFFERS_TEMPLATES} from '../const.js';
 
-import {getRandomInteger} from '../utils.js';
+import {getRandomInteger} from '../utils/common.js';
 
 const generateDescription = () => {
   const maxDescriptionLength = 5;

@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import {formatDate, createRepitedTemplate} from '../utils.js';
+import {formatDate, createRepitedTemplate} from '../utils/point.js';
 import {TYPES, DESTINATIONS} from '../const.js';
 
 const EMPTY_POINT = {

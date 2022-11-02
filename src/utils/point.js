@@ -1,12 +1,5 @@
 import dayjs from 'dayjs';
 
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-}
-
 export const formatDuration = (durationMS) => {
   const bufDate = new Date(durationMS);
   const MS_PER_DAY = 24*60*60*1000;
@@ -50,31 +43,4 @@ export const sortPointsByTime = (points) => {
 
 export const sortPointsByPrice = (points) => {
   points.sort((a, b) => b.price - a.price);
-}
-
-export const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-};
-
-export const render = (container, element, place = RenderPosition.BEFOREEND) => {
-  switch (place) {
-    case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
-      break;
-    case RenderPosition.BEFOREEND:
-      container.append(element);
-      break;
-  }
-};
-
-export const createElement = (template) => {
-  const newElement = document.createElement('div');
-  newElement.innerHTML = template;
-
-  return newElement.firstElementChild;
-}
-
-export const isEscKey = (evt) => {
-  return evt.key === 'Escape' || evt.key === 'Esc';
 }
