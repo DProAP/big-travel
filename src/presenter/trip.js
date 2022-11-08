@@ -1,11 +1,12 @@
 import SortView from "../view/sort.js";
-import PointEditorView from "../view/point-editor.js";
-import PointView from "../view/point.js";
 import PointsListView from "../view/points-list.js";
 import NoPointView from "../view/no-point.js";
+
+import PointPresenter from "./point.js"
+
 // import {sortPointsByDay} from "./utils/point.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
-import {isEscKey} from "../utils/common.js";
+import {render, RenderPosition} from "../utils/render.js";
+
 import {SORT_TYPES} from "../const.js";
 
 export default class Trip {
@@ -36,41 +37,8 @@ export default class Trip {
   }
 
   _renderPoint(point) {
-    const pointComponent = new PointView(point, this._tripOffers);
-    const pointEditComponent = new PointEditorView(point, this._tripOffers);
-  
-    const replaceFieldToForm = () => {
-      replace(pointEditComponent, pointComponent);
-    }
-  
-    const replaceFormToField = () => {
-      replace(pointComponent, pointEditComponent);
-    }
-  
-    const onEscKeyDown = (evt) => {
-      if (isEscKey(evt)) {
-        evt.preventDefault();
-        replaceFormToField();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    }
-  
-    pointComponent.setEditClickHandler(() => {
-      replaceFieldToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-  
-    pointEditComponent.setFormSubmitHandler(() => {
-      replaceFormToField();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-  
-    pointEditComponent.setFormResetHandler(() => {
-      replaceFormToField();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-  
-    render(this._pointsListComponent, pointComponent);
+    const pointPresenter = new PointPresenter(this._pointsListComponent);
+    pointPresenter.init(point, this._tripOffers);
   }
 
   _renderPoints() {
