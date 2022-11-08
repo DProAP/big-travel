@@ -26,58 +26,57 @@ const navigationElement = document.querySelector('.trip-controls__navigation');
 const filterElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
 
-const renderPoint = (pointsListElement, point, offers) => {
-    const pointComponent = new PointView(point, offers);
-    const pointEditComponent = new PointEditorView(point, offers);
+const renderPoint = (pointsListComponent, point, offers) => {
+  const pointComponent = new PointView(point, offers);
+  const pointEditComponent = new PointEditorView(point, offers);
 
-    const replaceFieldToForm = () => {
-        replace(pointEditComponent, pointComponent);
-    }
-
-    const replaceFormToField = () => {
-        replace(pointComponent, pointEditComponent);
-    }
-
-    const onEscKeyDown = (evt) => {
-        if (isEscKey(evt)) {
-            evt.preventDefault();
-            replaceFormToField();
-            document.removeEventListener('keydown', onEscKeyDown);
-        }
-    }
-
-    pointComponent.setEditClickHandler(() => {
-        replaceFieldToForm();
-        document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    pointEditComponent.setFormSubmitHandler(() => {
-        replaceFormToField();
-        document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    pointEditComponent.setFormResetHandler(() => {
-        replaceFormToField();
-        document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(pointsListElement, pointComponent);
-  };
-  
-  const renderTrip = (tripContainer, tripPoints, tripOffers) => {
-      if (tripPoints.length === 0) {
-          render(tripContainer, new NoPointView());
-          return;
-      }
-          render(tripContainer, new SortView(SORT_TYPES));
-      
-          const tripListComponent = new PointsListView();
-          render(tripContainer, tripListComponent);
-      
-          for(const point of tripPoints){
-            renderPoint(tripListComponent.getElement(), point, tripOffers);
-          }
+  const replaceFieldToForm = () => {
+    replace(pointEditComponent, pointComponent);
   }
+
+  const replaceFormToField = () => {
+    replace(pointComponent, pointEditComponent);
+  }
+
+  const onEscKeyDown = (evt) => {
+    if (isEscKey(evt)) {
+      evt.preventDefault();
+      replaceFormToField();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  }
+
+  pointComponent.setEditClickHandler(() => {
+    replaceFieldToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.setFormSubmitHandler(() => {
+    replaceFormToField();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.setFormResetHandler(() => {
+    replaceFormToField();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  render(pointsListComponent, pointComponent);
+};
+
+const renderTrip = (tripContainer, tripPoints, tripOffers) => {
+  if (tripPoints.length === 0) {
+    render(tripContainer, new NoPointView());
+    return;
+  }
+    render(tripContainer, new SortView(SORT_TYPES));
+
+    const pointsListComponent = new PointsListView();
+    render(tripContainer, pointsListComponent);
+
+    tripPoints
+      .forEach((point) => renderPoint(pointsListComponent, point, tripOffers));
+}
 
 const routeInfoComponent = new TripInfoView(points);
 render(tripInfoElement, routeInfoComponent, RenderPosition.AFTERBEGIN);
