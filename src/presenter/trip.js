@@ -1,12 +1,12 @@
-import SortView from "./view/sort.js";
-import PointEditorView from "./view/point-editor.js";
-import PointView from "./view/point.js";
-import PointsListView from "./view/points-list.js";
-import NoPointView from "./view/no-point.js";
-import {sortPointsByDay} from "./utils/point.js";
-import {render, RenderPosition, replace} from "./utils/render.js";
-import {isEscKey} from "./utils/common.js";
-import {SORT_TYPES, MENU_TABS} from "./const.js";
+import SortView from "../view/sort.js";
+import PointEditorView from "../view/point-editor.js";
+import PointView from "../view/point.js";
+import PointsListView from "../view/points-list.js";
+import NoPointView from "../view/no-point.js";
+// import {sortPointsByDay} from "./utils/point.js";
+import {render, RenderPosition, replace} from "../utils/render.js";
+import {isEscKey} from "../utils/common.js";
+import {SORT_TYPES} from "../const.js";
 
 export default class Trip {
   constructor(tripContainer) {
@@ -19,12 +19,12 @@ export default class Trip {
 
   init(tripPoints, tripOffers) {
     this._tripPoints = tripPoints.slice();
-    this._tripOffers = tripOffers.slice();
+    this._tripOffers = new Map(tripOffers);
     this._renderTrip();
   }
   
   _renderNoPoints() {
-    render(this._tripContainer, this._noPointComponent);
+    render(this._tripContainer, this._noPointComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSort() {
