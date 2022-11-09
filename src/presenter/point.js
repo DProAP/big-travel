@@ -1,62 +1,107 @@
 import PointEditorView from "../view/point-editor.js";
 import PointView from "../view/point.js";
-import {render, RenderPosition, replace} from "../utils/render.js";
+import {render, RenderPosition, replace, remove} from "../utils/render.js";
 import {isEscKey} from "../utils/common.js";
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class Point {
-  constructor(pointsListContainer) {
+  constructor(pointsListContainer, changeData, changeMode) {
     this._pointsListContainer = pointsListContainer;
+    this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._pointComponent = null;
     this._pointEditComponent = null;
+    this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._handleFormReset = this._handleFormReset.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   };
 
-  init(point, offers){
+  init(point, tripOffers){
     this._point = point;
-    this._tripOffers = new Map(offers);
 
-    this._pointComponent = new PointView(point, this._tripOffers);;
-    this._pointEditComponent = new PointEditorView(point, this._tripOffers);
+    const prevPointComponent = this._pointComponent;
+    const prevPointEditComponent = this._pointEditComponent;
+
+    this._pointComponent = new PointView(point, tripOffers);
+    this._pointEditComponent = new PointEditorView(point, tripOffers);
 
     this._pointComponent.setEditClickHandler(this._handleEditClick);
+    this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setFormResetHandler(this._handleFormReset);
 
-    render(this._pointsListContainer, this._pointComponent);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this._pointsListContainer, this._pointComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this._mode === Mode.DEFAULT) {
+      replace(this._pointComponent, prevPointComponent);
+    }
+
+    if (this._mode === Mode.EDITING) {
+      replace(this._pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+  }
+
+  destroy(){
+    remove(this._pointComponent);
+    remove(this._pointEditComponent);
   }
   
-    _replaceFieldToForm() {
-      replace(this._pointEditComponent, this._pointComponent, RenderPosition.BEFOREEND);
-      document.addEventListener('keydown', this._escKeyDownHandler);
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceFormToField();
     }
-  
-    _replaceFormToField(){
-      replace(this._pointComponent, this._pointEditComponent);
+  }
+
+  _replaceFieldToForm() {
+    replace(this._pointEditComponent, this._pointComponent);
+    document.addEventListener('keydown', this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
+  }
+
+  _replaceFormToField(){
+    replace(this._pointComponent, this._pointEditComponent);
+    document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
+  }
+
+  _escKeyDownHandler(evt){
+    if (isEscKey(evt)) {
+      evt.preventDefault();
+      this._replaceFormToField();
       document.removeEventListener('keydown', this._escKeyDownHandler);
     }
+  }
+
+  _handleEditClick(){
+    this._replaceFieldToForm();
+  };
+
+  _handleFormSubmit(point){
+    this._changeData(point);
+    this._replaceFormToField();
+  };
+
+  _handleFormReset(){
+    this._replaceFormToField();
+  }; 
   
-    _escKeyDownHandler(evt){
-      if (isEscKey(evt)) {
-        evt.preventDefault();
-        this._replaceFormToField();
-        document.removeEventListener('keydown', this._escKeyDownHandler);
-      }
-    }
-  
-    _handleEditClick(){
-      this._replaceFieldToForm();
-    };
-  
-    _handleFormSubmit(){
-      this._replaceFormToField();
-    };
-  
-    _handleFormReset(){
-      this._replaceFormToField();
-    };   
+  _handleFavoriteClick() {
+    this._changeData(Object.assign({}, this._point, {isFavorite: !this._point.isFavorite}));
+  }
 }

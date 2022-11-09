@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-
+import { nanoid } from 'nanoid';
 import {OPTIONS_COUNT} from '../const.js';
 import {DESCRIPTIONS} from '../const.js';
 import {TYPES} from '../const.js';
@@ -94,6 +94,7 @@ export const generatePoint = (offersDict) => {
   const {start, end} = generateDates();
   const type = generateType();
   return {
+    id: nanoid(),
     type: type,
     destination: generateDestination(),
     startDate: start,
