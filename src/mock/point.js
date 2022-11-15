@@ -23,9 +23,11 @@ const generateDates = () => {
   const maxDaysGap = 7;
   const maxDurationMinutes = 300;
   const minDurationMinutes = 20;
+  const maxMinutesShift = 24 * 60;
   const daysGap = getRandomInteger(-maxDaysGap, maxDaysGap);
+  const randomTimeShift = getRandomInteger(0, maxMinutesShift);
   const duration = getRandomInteger(minDurationMinutes, maxDurationMinutes);
-  let start = dayjs().add(daysGap, 'day');
+  let start = dayjs().add(daysGap, 'day').add(randomTimeShift, 'minute');
   let end = start.add(duration, 'minute');
   start = start.toDate();
   end = end.toDate();
