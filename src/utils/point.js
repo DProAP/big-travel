@@ -33,14 +33,14 @@ export const createRepitedTemplate = (items, callback, args) => {
   return result;
 }
 
-export const sortPointsByDay = (points) => {
-  points.sort((a, b) => a.startDate - b.startDate);
+export const sortPointsByDay = (pointA, pointB) => {
+  return (pointA.startDate - pointB.startDate);
 }
 
-export const sortPointsByTime = (points) => {
-  points.sort((a, b) => (b.endDate - b.startDate) - (a.endDate - a.startDate));
+export const sortPointsByTime = (pointA, pointB) => {
+  return ((pointB.endDate - pointB.startDate) - (pointA.endDate - pointA.startDate));
 }
 
-export const sortPointsByPrice = (points) => {
-  points.sort((a, b) => b.price - a.price);
+export const sortPointsByPrice = (pointA, pointB) => {
+  return (pointB.price - pointA.price);
 }

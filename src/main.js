@@ -16,7 +16,7 @@ const POINT_COUNT = 15;
 
 const offers = generateOffersDict();
 const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
-sortPointsByDay(points);
+points.sort(sortPointsByDay);
 const filters = generateFilter(points);
 
 const tripInfoElement = document.querySelector('.trip-main');

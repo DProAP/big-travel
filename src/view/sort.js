@@ -1,10 +1,19 @@
 import AbstractView from './abstract.js';
+import {SORT_TYPES} from "../const.js";
+
+const sortHeaders = [
+  'day',
+  'event',
+  'time',
+  'price',
+  'offers'
+];
 
 const createSortItemTemplate = (name, isChecked) => {
 
   return (
     `<div class="trip-sort__item  trip-sort__item--${name}">
-      <input id="sort-${name} " 
+      <input id="sort-${name}" 
         class="trip-sort__input  visually-hidden" 
         type="radio" 
         name="trip-sort" 
@@ -19,8 +28,8 @@ const createSortItemTemplate = (name, isChecked) => {
   )
 }
 
-const createSortTemplate = (sortTypes) => {
-  const sortItemsTemplate = sortTypes
+const createSortTemplate = () => {
+  const sortItemsTemplate = sortHeaders
     .map((name, index) => createSortItemTemplate(name, index === 0))
     .join('');
   return `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
@@ -29,12 +38,33 @@ const createSortTemplate = (sortTypes) => {
 };
 
 export default class Sort extends AbstractView{
-  constructor(sortTypes) {
+  constructor() {
     super();
-    this._sortTypes = sortTypes;
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
   }
 
   getTemplate() {
-    return createSortTemplate(this._sortTypes);
+    return createSortTemplate();
   }
+
+  _sortTypeChangeHandler(evt) {
+    if (evt.target.tagName !== 'LABEL') {
+      return;
+    }
+
+    evt.preventDefault();
+    const sortHeader = evt.target.innerText;
+    
+    if (sortHeader in SORT_TYPES) {
+      const radioButton = evt.target.previousElementSibling;
+      radioButton.checked = true;
+      this._callback.sortTypeChange(sortHeader);
+    }
+  }
+
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
+  }
+
 }

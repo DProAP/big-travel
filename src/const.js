@@ -50,13 +50,12 @@ export const OFFERS_TEMPLATES = [
   {title: 'Book tickets', price:  40},
 ];
 
-export const SORT_TYPES = [
-  'day',
-  'event',
-  'time',
-  'price',
-  'offers'
-];
+export const SORT_TYPES = {
+  DAY: 'DAY',
+  TIME: 'TIME',
+  PRICE: 'PRICE',
+};
+
 
 export const MENU_TABS = [
   'Table',
