@@ -52,6 +52,8 @@ export default class Trip {
       case SORT_TYPES.PRICE:
         this._tripPoints.sort(sortPointsByPrice);
         break;
+      default:
+        throw new Error(`Unknown sort type.`);
     }
     this._currentSortType = sortType;
   }
