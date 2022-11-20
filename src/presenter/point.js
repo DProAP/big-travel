@@ -21,7 +21,7 @@ export default class Point {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleEditClick = this._handleEditClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
-    this._handleFormReset = this._handleFormReset.bind(this);
+    this._handleRollupButtonClick = this._handleRollupButtonClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   };
 
@@ -37,7 +37,7 @@ export default class Point {
     this._pointComponent.setEditClickHandler(this._handleEditClick);
     this._pointComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
-    this._pointEditComponent.setFormResetHandler(this._handleFormReset);
+    this._pointEditComponent.setRollupButtonClickHandler(this._handleRollupButtonClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this._pointsListContainer, this._pointComponent, RenderPosition.BEFOREEND);
@@ -46,11 +46,12 @@ export default class Point {
 
     if (this._mode === Mode.DEFAULT) {
       replace(this._pointComponent, prevPointComponent);
+    } else {
+      if (this._mode === Mode.EDITING) {
+        replace(this._pointEditComponent, prevPointEditComponent);
+      }
     }
 
-    if (this._mode === Mode.EDITING) {
-      replace(this._pointEditComponent, prevPointEditComponent);
-    }
 
     remove(prevPointComponent);
     remove(prevPointEditComponent);
@@ -84,7 +85,6 @@ export default class Point {
     if (isEscKey(evt)) {
       evt.preventDefault();
       this._replaceFormToField();
-      document.removeEventListener('keydown', this._escKeyDownHandler);
     }
   }
 
@@ -97,7 +97,7 @@ export default class Point {
     this._replaceFormToField();
   };
 
-  _handleFormReset(){
+  _handleRollupButtonClick(){
     this._replaceFormToField();
   }; 
   

@@ -14,60 +14,79 @@ const EMPTY_POINT = {
   price: 0
 }
 
+const createEventTypesItemTemplate = (type, currentType) => {
+  const typeLC = type.toLowerCase();
+  return ( 
+    `<div class="event__type-item">
+      <input 
+        id="event-type-${typeLC}-1" 
+        class="event__type-input  visually-hidden" 
+        type="radio" name="event-type" 
+        value="${typeLC}"
+        ${type === currentType ? 'checked' : ''}>
+      <label 
+        class="event__type-label  event__type-label--${typeLC}" 
+        for="event-type-${typeLC}-1">
+        ${type}
+      </label>
+    </div>`
+  )
+}  
+
+const createDestinationListItemTemplate = (destination) => {
+  return`<option value="${destination}"></option>`;
+}
+
+const createOffersItemTemplate = (offer, i, options) => {
+    const titleTail = offer.title.split(' ').slice(-1);
+    const isChecked = options.has(i) ? 'checked' : '';
+    return `<div class="event__offer-selector">
+      <input 
+        class="event__offer-checkbox  visually-hidden" 
+        id="event-offer-${titleTail}-1" 
+        type="checkbox" 
+        name="event-offer-${titleTail}" 
+        ${isChecked}>
+      <label 
+        class="event__offer-label" 
+        for="event-offer-${titleTail}-1">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>`
+}
+
+const createPhotosItemTemplate = (photo) => {
+  return `<img class="event__photo" src=${photo} alt="Event photo">`;
+}
+
 const createPointEditorTemplate = (point, offers) => {
   
-  const {type, destination, startDate, endDate, description, photos, options, price} = point;
+  const {
+      type, 
+      destination, 
+      startDate, 
+      endDate, 
+      description, 
+      photos, 
+      options: thisPointOffers, 
+      price
+    } = point;
   
   const thisTypeOffers = offers.get(type);
   const isEmptyPhotos = photos.length == 0 ? 'visually-hidden' : '';
   const isEmptyDestination = description == '' ? 'visually-hidden' : '';
   const isEmptyOffers = thisTypeOffers.length == 0 ? 'visually-hidden' : '';
   
-  const createEventTypesItemTemplate = (type, index, currentType) => {
-    return ( 
-      `<div class="event__type-item">
-        <input 
-          id="event-type-${type.toLowerCase()}-1" 
-          class="event__type-input  visually-hidden" 
-          type="radio" name="event-type" 
-          value="${type.toLowerCase()}"
-          ${type === currentType ? 'checked' : ''}>
-        <label 
-          class="event__type-label  event__type-label--${type.toLowerCase()}" 
-          for="event-type-${type.toLowerCase()}-1">
-          ${type}
-        </label>
-      </div>`
-    )
-  }  
-  
-  const createDestinationListItemTemplate = (destination) => {
-    return`<option value="${destination}"></option>`;
-  }
-  
-  const createOffersItemTemplate = (offer, i, options) => {
-      const titleTail = offer.title.split(' ').slice(-1);
-      const isChecked = options.has(i) ? 'checked' : '';
-      return `<div class="event__offer-selector">
-        <input 
-          class="event__offer-checkbox  visually-hidden" 
-          id="event-offer-${titleTail}-1" 
-          type="checkbox" 
-          name="event-offer-${titleTail}" 
-          ${isChecked}>
-        <label 
-          class="event__offer-label" 
-          for="event-offer-${titleTail}-1">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`
-  }
-  
-  const createPhotosItemTemplate = (photo) => {
-    return `<img class="event__photo" src=${photo} alt="Event photo">`;
-  }
+  const eventTypesItemTemplate = 
+    createRepitedTemplate(TYPES, createEventTypesItemTemplate, type);
+  const destinationListItemTemplate = 
+    createRepitedTemplate(DESTINATIONS, createDestinationListItemTemplate);
+  const offersItemTemplate = 
+    createRepitedTemplate(thisTypeOffers, createOffersItemTemplate, thisPointOffers);
+  const photosItemTemplate = 
+    createRepitedTemplate(photos, createPhotosItemTemplate);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -82,7 +101,7 @@ const createPointEditorTemplate = (point, offers) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${createRepitedTemplate(TYPES, createEventTypesItemTemplate, type)}
+            ${eventTypesItemTemplate}
           </fieldset>
         </div>
       </div>
@@ -93,7 +112,7 @@ const createPointEditorTemplate = (point, offers) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${createRepitedTemplate(DESTINATIONS, createDestinationListItemTemplate)}
+          ${destinationListItemTemplate}
         </datalist>
       </div>
 
@@ -114,14 +133,17 @@ const createPointEditorTemplate = (point, offers) => {
       </div>
 
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
+      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
     </header>
     <section class="event__details">
       <section class="event__section  event__section--offers ${isEmptyOffers}">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
         <div class="event__available-offers">
-          ${createRepitedTemplate(thisTypeOffers, createOffersItemTemplate, options)}
+          ${offersItemTemplate}
         </div>
 
       </section>
@@ -132,7 +154,7 @@ const createPointEditorTemplate = (point, offers) => {
 
         <div class="event__photos-container ${isEmptyPhotos}" >
           <div class="event__photos-tape">
-            ${createRepitedTemplate(photos, createPhotosItemTemplate)}
+            ${photosItemTemplate}
           </div>
         </div>
       </section>
@@ -147,11 +169,29 @@ export default class PointEditor extends AbstractView{
     this._point = point;
     this._offers = offers;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
-    this._formResetHandler = this._formResetHandler.bind(this);
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
   }
 
   getTemplate() {
     return createPointEditorTemplate(this._point, this._offers);
+  }
+
+  updateData(update) {
+    if (!update) {
+      return;
+    }
+    this._point = Object.assign({}, this._point, update);
+    this.updateElement();
+  }
+
+  updateElement() {
+    const prevElement = this.getElement();
+    const parent = prevElement.parentElement;
+    this.removeElement();
+
+    const newElement = this.getElement();
+
+    parent.replaceChild(newElement, prevElement);
   }
 
   _formSubmitHandler(evt) {
@@ -164,14 +204,14 @@ export default class PointEditor extends AbstractView{
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 
-  _formResetHandler(evt) {
+  _rollupButtonClickHandler(evt) {
     evt.preventDefault();
     this._callback.formReset();
   }
 
-  setFormResetHandler(callback) {
+  setRollupButtonClickHandler(callback) {
     this._callback.formReset = callback;
-    this.getElement().querySelector('form').addEventListener('reset', this._formResetHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupButtonClickHandler);
   }
 
 }
