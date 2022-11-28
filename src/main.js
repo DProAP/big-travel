@@ -3,21 +3,23 @@ import TripCostView from "./view/trip-cost.js";
 import MainMenuView from "./view/main-menu.js";
 import FilterView from "./view/filter.js";
 
-import {generatePoint, generateOffersDict} from "./mock/point.js";
+import {generatePoint, generateOffersDict, generateDestinationsDict} from "./mock/point.js";
 import {generateFilter} from './mock/filter.js';
 import {sortPointsByDay} from "./utils/point.js";
-import {render, RenderPosition, replace} from "./utils/render.js";
-import {isEscKey} from "./utils/common.js";
-import {SORT_TYPES, MENU_TABS} from "./const.js";
+import {render, RenderPosition} from "./utils/render.js";
+import {MENU_TABS} from "./const.js";
 
 import TripPresenter from './presenter/trip.js'
 
 const POINT_COUNT = 15;
 
 const offers = generateOffersDict();
-const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers));
+const destinations = generateDestinationsDict();
+const points = new Array(POINT_COUNT).fill().map(() => generatePoint(offers, destinations));
 points.sort(sortPointsByDay);
 const filters = generateFilter(points);
+
+
 
 const tripInfoElement = document.querySelector('.trip-main');
 const navigationElement = document.querySelector('.trip-controls__navigation');
@@ -32,4 +34,4 @@ render(routeInfoComponent, new TripCostView(points, offers));
 render(navigationElement, new MainMenuView(MENU_TABS));
 render(filterElement, new FilterView(filters));
 
-tripPresenter.init(points, offers);
+tripPresenter.init(points, offers, destinations);

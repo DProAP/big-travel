@@ -1,4 +1,4 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import {formatDate, createRepitedTemplate} from '../utils/point.js';
 import {TYPES, DESTINATIONS} from '../const.js';
 
@@ -14,19 +14,20 @@ const EMPTY_POINT = {
   price: 0
 }
 
-const createEventTypesItemTemplate = (type, currentType) => {
-  const typeLC = type.toLowerCase();
+const createEventTypesItemTemplate = (type, ...args) => {
+  const currentType = args[1];
+  const typeLowCase = type.toLowerCase();
   return ( 
     `<div class="event__type-item">
       <input 
-        id="event-type-${typeLC}-1" 
+        id="event-type-${typeLowCase}-1" 
         class="event__type-input  visually-hidden" 
         type="radio" name="event-type" 
-        value="${typeLC}"
+        value="${typeLowCase}"
         ${type === currentType ? 'checked' : ''}>
       <label 
-        class="event__type-label  event__type-label--${typeLC}" 
-        for="event-type-${typeLC}-1">
+        class="event__type-label  event__type-label--${typeLowCase}" 
+        for="event-type-${typeLowCase}-1">
         ${type}
       </label>
     </div>`
@@ -37,9 +38,9 @@ const createDestinationListItemTemplate = (destination) => {
   return`<option value="${destination}"></option>`;
 }
 
-const createOffersItemTemplate = (offer, i, options) => {
+const createOffersItemTemplate = (offer, offerIndex, checkedOptions) => {
     const titleTail = offer.title.split(' ').slice(-1);
-    const isChecked = options.has(i) ? 'checked' : '';
+    const isChecked = checkedOptions.has(offerIndex) ? 'checked' : '';
     return `<div class="event__offer-selector">
       <input 
         class="event__offer-checkbox  visually-hidden" 
@@ -49,7 +50,8 @@ const createOffersItemTemplate = (offer, i, options) => {
         ${isChecked}>
       <label 
         class="event__offer-label" 
-        for="event-offer-${titleTail}-1">
+        for="event-offer-${titleTail}-1"
+        data-index="${offerIndex}">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -61,7 +63,7 @@ const createPhotosItemTemplate = (photo) => {
   return `<img class="event__photo" src=${photo} alt="Event photo">`;
 }
 
-const createPointEditorTemplate = (point, offers) => {
+const createPointEditorTemplate = (pointState, offers) => {
   
   const {
       type, 
@@ -72,7 +74,7 @@ const createPointEditorTemplate = (point, offers) => {
       photos, 
       options: thisPointOffers, 
       price
-    } = point;
+    } = pointState;
   
   const thisTypeOffers = offers.get(type);
   const isEmptyPhotos = photos.length == 0 ? 'visually-hidden' : '';
@@ -163,40 +165,28 @@ const createPointEditorTemplate = (point, offers) => {
   </li>`;
 };
 
-export default class PointEditor extends AbstractView{
-  constructor(point = EMPTY_POINT, offers) {
+export default class PointEditor extends SmartView{
+  constructor(data = EMPTY_POINT, offers, descriptions) {
     super();
-    this._point = point;
+    this._state = PointEditor.parseDataToState(data);
     this._offers = offers;
+    this._descriptions = descriptions;
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
+    this._typeChangeHandler = this._typeChangeHandler.bind(this);
+    this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
+    this._priceChangeHandler = this._priceChangeHandler.bind(this);
+    this._offersToggleHandler = this._offersToggleHandler.bind(this);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createPointEditorTemplate(this._point, this._offers);
-  }
-
-  updateData(update) {
-    if (!update) {
-      return;
-    }
-    this._point = Object.assign({}, this._point, update);
-    this.updateElement();
-  }
-
-  updateElement() {
-    const prevElement = this.getElement();
-    const parent = prevElement.parentElement;
-    this.removeElement();
-
-    const newElement = this.getElement();
-
-    parent.replaceChild(newElement, prevElement);
+    return createPointEditorTemplate(this._state, this._offers);
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit(this._point);
+    this._callback.formSubmit(PointEditor.parseStateToData(this._state));
   }
 
   setFormSubmitHandler(callback) {
@@ -214,4 +204,95 @@ export default class PointEditor extends AbstractView{
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupButtonClickHandler);
   }
 
+  _typeChangeHandler(evt) {
+    evt.preventDefault();
+    if (evt.target.tagName !== 'LABEL') {
+      return;
+    }
+    this.updateState(
+      {
+        type: evt.target.innerText,
+        options: new Set(),
+      }
+    );
+
+  }
+
+  _destinationChangeHandler(evt) {
+    evt.preventDefault();
+    const newDestination = evt.target.value
+    if (DESTINATIONS.includes(newDestination)) {
+      this.updateState(
+        {
+          destination: newDestination, 
+          description: this._descriptions[newDestination].description,
+          photos: this._descriptions[newDestination].photos
+        });
+    }
+  }
+
+  _priceChangeHandler(evt) {
+    evt.preventDefault();
+    this.updateState(
+      {
+        price: evt.target.value
+      },
+    true);
+  }
+
+  _offersToggleHandler(evt) {
+    evt.preventDefault();
+    const label = evt.target.closest('LABEL');
+    const checked = label.previousElementSibling.checked;
+    const index = +label.dataset.index;
+    if (!label) {
+      return;
+    }
+    const updatedOptions = new Set(this._state.options);
+    if (checked) {
+      updatedOptions.delete(index);
+    } else {
+      updatedOptions.add(index);
+    }
+    this.updateState(
+      {
+        options: updatedOptions
+      }
+    );
+  }
+
+  restoreHandlers() {
+    this._setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setRollupButtonClickHandler(this._callback.formReset);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.event__type-list')
+      .addEventListener('click', this._typeChangeHandler);
+    this.getElement()
+      .querySelector('#event-destination-1')
+      .addEventListener('change', this._destinationChangeHandler);
+    this.getElement()
+      .querySelector('#event-price-1')
+      .addEventListener('input', this._priceChangeHandler);
+    this.getElement()
+      .querySelector('.event__available-offers')
+      .addEventListener('click', this._offersToggleHandler);
+  }
+
+  static parseDataToState(data) {
+    return Object.assign({}, data);
+  }
+  
+  static parseStateToData(state) {
+    return Object.assign({}, state);
+  }
+
+  reset(data) {
+    this.updateState(
+      PointEditor.parseDataToState(data)
+    );
+  }
 }

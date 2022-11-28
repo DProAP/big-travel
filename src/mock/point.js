@@ -51,7 +51,7 @@ const generateDestination = () => {
 };
 
 const generateOptions = (type, offersDict) => {
-  const randomCount = getRandomInteger(1, offersDict.get(type).length - 1);
+  const randomCount = getRandomInteger(0, offersDict.get(type).length - 1);
   let options = new Set();
 
   for(let i = 0; i < randomCount; i++){
@@ -82,7 +82,7 @@ const generateFavorite = () => {
 export const generateOffersDict = () => {
   const offersDict = new Map();
   for (let type of TYPES) {
-    const randomCount = getRandomInteger(1, OPTIONS_COUNT);
+    const randomCount = getRandomInteger(0, OPTIONS_COUNT);
     let offersBuf = [];
     for(let i = 0; i < randomCount; i++){
       offersBuf.push(OFFERS_TEMPLATES[getRandomInteger(0, OFFERS_TEMPLATES.length - 1)]);
@@ -92,17 +92,26 @@ export const generateOffersDict = () => {
   return offersDict;
 }
 
-export const generatePoint = (offersDict) => {
+export const generateDestinationsDict = () => {
+  const destinationsDict = {};
+  for (let destination of DESTINATIONS) {
+    destinationsDict[destination] = {description: generateDescription(), photos: generatePhotos()};
+  }
+  return destinationsDict;
+}
+
+export const generatePoint = (offersDict, destinationsDict) => {
   const {start, end} = generateDates();
   const type = generateType();
+  const destination = generateDestination();
   return {
     id: nanoid(),
     type: type,
-    destination: generateDestination(),
+    destination: destination,
     startDate: start,
     endDate: end,
-    description: generateDescription(),
-    photos: generatePhotos(),
+    description: destinationsDict[destination].description,
+    photos: destinationsDict[destination].photos,
     isFavorite: generateFavorite(),
     options: generateOptions(type, offersDict),
     price: getRandomInteger(10, 200)

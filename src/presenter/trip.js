@@ -24,9 +24,10 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(tripPoints, tripOffers) {
+  init(tripPoints, tripOffers, tripDestinations) {
     this._tripPoints = tripPoints.slice();
     this._tripOffers = new Map(tripOffers);
+    this._tripDestinations = Object.assign({}, tripDestinations);
     this._renderTrip();
   }
   
@@ -39,6 +40,7 @@ export default class Trip {
   _handlePointChange(updatedPoint) {
     this._tripPoints = updateItem(this._tripPoints, updatedPoint);
     this._pointPresenter[updatedPoint.id].init(updatedPoint, this._tripOffers);
+    console.log(this._tripPoints);
   }
 
   _sortPoints(sortType) {
@@ -82,7 +84,7 @@ export default class Trip {
 
   _renderPoint(point) {
     const pointPresenter = new PointPresenter(this._pointsListComponent, this._handlePointChange, this._handleModeChange);
-    pointPresenter.init(point, this._tripOffers);
+    pointPresenter.init(point, this._tripOffers, this._tripDestinations);
     this._pointPresenter[point.id] = pointPresenter;
   }
 
