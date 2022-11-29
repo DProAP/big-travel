@@ -239,23 +239,18 @@ export default class PointEditor extends SmartView{
   _destinationChangeHandler(evt) {
     evt.preventDefault();
     const newDestination = evt.target.value
-
-    if (DESTINATIONS.includes(newDestination)) {
-      this.updateState(
-        {
-          destination: newDestination,
-          description: this._descriptions[newDestination].description,
-          photos: this._descriptions[newDestination].photos
-        });
-        return;
-    }
-    this.updateState(
-      {
+    let updatedDestination = {};
+    updatedDestination = DESTINATIONS.includes(newDestination) ?
+      { 
         destination: newDestination,
-        description: '',
-        photos: []
-      }
-    );
+        description: this._descriptions[newDestination].description,
+        photos: this._descriptions[newDestination].photos 
+      } : { 
+            destination: newDestination,
+            description: '',
+            photos: [] 
+          }
+    this.updateState(updatedDestination);
   }
 
   _priceChangeHandler(evt) {
