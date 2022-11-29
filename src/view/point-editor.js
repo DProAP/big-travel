@@ -93,7 +93,12 @@ const createPointEditorTemplate = (pointState, offers) => {
   const photosItemTemplate = 
     createRepitedTemplate(photos, createPhotosItemTemplate);
   
-  const isSubmitDisabled = (!DESTINATIONS.includes(pointState.destination)) ? true : false;
+  const isSubmitDisabled = 
+    (!DESTINATIONS.includes(destination)) 
+    || (price === 0) 
+    || (startDate === null) 
+    || (endDate === null)
+    || (startDate > endDate);
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -176,13 +181,21 @@ export default class PointEditor extends SmartView{
     this._state = PointEditor.parseDataToState(data);
     this._offers = offers;
     this._descriptions = descriptions;
+    this._startDatepicker = null;
+    this._endDatepicker = null;
+    
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
     this._typeChangeHandler = this._typeChangeHandler.bind(this);
     this._destinationChangeHandler = this._destinationChangeHandler.bind(this);
     this._priceChangeHandler = this._priceChangeHandler.bind(this);
     this._offersToggleHandler = this._offersToggleHandler.bind(this);
+    this._startDateChangeHandler = this._startDateChangeHandler.bind(this);
+    this._endDateChangeHandler = this._endDateChangeHandler.bind(this);
+    
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
   }
 
   getTemplate() {
@@ -250,8 +263,8 @@ export default class PointEditor extends SmartView{
     this.updateState(
       {
         price: +evt.target.value
-      },
-    true);
+      }
+    );
     console.log(this._state);
   }
 
@@ -276,8 +289,22 @@ export default class PointEditor extends SmartView{
     );
   }
 
+  _startDateChangeHandler([userDate]) {
+    this.updateState({
+      startDate: userDate,
+    }, true);
+  }
+
+  _endDateChangeHandler([userDate]) {
+    this.updateState({
+      endDate: userDate,
+    }, true);
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setStartDatepicker();
+    this._setEndDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setRollupButtonClickHandler(this._callback.formReset);
   }
@@ -291,7 +318,7 @@ export default class PointEditor extends SmartView{
       .addEventListener('change', this._destinationChangeHandler);
     this.getElement()
       .querySelector('#event-price-1')
-      .addEventListener('input', this._priceChangeHandler);
+      .addEventListener('change', this._priceChangeHandler);
     this.getElement()
       .querySelector('.event__available-offers')
       .addEventListener('click', this._offersToggleHandler);
@@ -310,4 +337,38 @@ export default class PointEditor extends SmartView{
       PointEditor.parseDataToState(data)
     );
   }
+
+  _setStartDatepicker() {
+    if (this._startDatepicker) {
+      this._startDatepicker.destroy();
+      this._startDatepicker = null;
+    }
+    this._startDatepicker = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.startDate,
+        onChange: this._startDateChangeHandler,
+      },
+    );
+  }
+
+  _setEndDatepicker() {
+    if (this._endDatepicker) {
+      this._endDatepicker.destroy();
+      this._endDatepicker = null;
+    }
+    this._endDatepicker = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.startDate,
+        defaultDate: this._state.endDate,
+        onChange: this._endDateChangeHandler,
+      },
+    );
+  }
+
 }
