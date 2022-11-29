@@ -1,6 +1,9 @@
 import SmartView from './smart.js';
 import {formatDate, createRepitedTemplate} from '../utils/point.js';
 import {TYPES, DESTINATIONS} from '../const.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_POINT = {
   type: 'Flight', 
@@ -89,6 +92,8 @@ const createPointEditorTemplate = (pointState, offers) => {
     createRepitedTemplate(thisTypeOffers, createOffersItemTemplate, thisPointOffers);
   const photosItemTemplate = 
     createRepitedTemplate(photos, createPhotosItemTemplate);
+  
+  const isSubmitDisabled = (!DESTINATIONS.includes(pointState.destination)) ? true : false;
 
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -134,7 +139,7 @@ const createPointEditorTemplate = (pointState, offers) => {
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isSubmitDisabled ? 'disabled' : ''}>Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
@@ -221,33 +226,43 @@ export default class PointEditor extends SmartView{
   _destinationChangeHandler(evt) {
     evt.preventDefault();
     const newDestination = evt.target.value
+
     if (DESTINATIONS.includes(newDestination)) {
       this.updateState(
         {
-          destination: newDestination, 
+          destination: newDestination,
           description: this._descriptions[newDestination].description,
           photos: this._descriptions[newDestination].photos
         });
+        return;
     }
+    this.updateState(
+      {
+        destination: newDestination,
+        description: '',
+        photos: []
+      }
+    );
   }
 
   _priceChangeHandler(evt) {
     evt.preventDefault();
     this.updateState(
       {
-        price: evt.target.value
+        price: +evt.target.value
       },
     true);
+    console.log(this._state);
   }
 
   _offersToggleHandler(evt) {
     evt.preventDefault();
     const label = evt.target.closest('LABEL');
-    const checked = label.previousElementSibling.checked;
-    const index = +label.dataset.index;
     if (!label) {
       return;
     }
+    const checked = label.previousElementSibling.checked;
+    const index = +label.dataset.index;
     const updatedOptions = new Set(this._state.options);
     if (checked) {
       updatedOptions.delete(index);
