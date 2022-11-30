@@ -17,6 +17,8 @@ const EMPTY_POINT = {
   price: 0
 }
 
+const pointDateFormat = 'd/m/y H:i';
+
 const createEventTypesItemTemplate = (type, ...args) => {
   const currentType = args[1];
   const typeLowCase = type.toLowerCase();
@@ -342,7 +344,7 @@ export default class PointEditor extends SmartView{
       this.getElement().querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        dateFormat: pointDateFormat,
         defaultDate: this._state.startDate,
         onChange: this._startDateChangeHandler,
       },
@@ -358,7 +360,7 @@ export default class PointEditor extends SmartView{
       this.getElement().querySelector('#event-end-time-1'),
       {
         enableTime: true,
-        dateFormat: 'd/m/y H:i',
+        dateFormat: pointDateFormat,
         minDate: this._state.startDate,
         defaultDate: this._state.endDate,
         onChange: this._endDateChangeHandler,
